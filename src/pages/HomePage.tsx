@@ -21,9 +21,9 @@ const HomePage = () => {
   useEffect(() => {
     const fetchProductos = async () => {
       try {
-        const producto11 = await getArticuloManufacturadoById(11);
-        const producto13 = await getArticuloManufacturadoById(13);
-        const producto14 = await getArticuloManufacturadoById(14);
+        const producto11 = await getArticuloManufacturadoById(13);
+        const producto13 = await getArticuloManufacturadoById(14);
+        const producto14 = await getArticuloManufacturadoById(15);
         setProductos([producto11, producto13, producto14]);
       } catch (error) {
         console.error('Error al obtener los productos:', error);

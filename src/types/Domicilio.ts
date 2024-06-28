@@ -10,7 +10,7 @@ export class Domicilio extends Base {
     piso: number;
     nroDpto: number;
     localidad: Localidad;
-    clientes: Cliente[];
+    clientes?: Cliente[];
 
     constructor(
         id: number = 0,
@@ -20,7 +20,7 @@ export class Domicilio extends Base {
         cp: number = 0,
         piso: number = 0,
         nroDpto: number = 0,
-        localidad: Localidad,
+        localidad: Localidad = new Localidad(),
         clientes: Cliente[] = []
     ) {
         super(id, eliminado);
