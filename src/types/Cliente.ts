@@ -2,7 +2,6 @@ import { Base } from './Base';
 import { Domicilio } from './Domicilio';
 import { ImagenCliente } from './ImagenCliente';
 import { Pedido } from './Pedido';
-import { UsuarioCliente } from './UsuarioCliente';
 
 
 export class Cliente extends Base {
@@ -13,8 +12,8 @@ export class Cliente extends Base {
     fechaNacimiento: string;
     domicilios: Domicilio[];
     imagenCliente: ImagenCliente;
-    usuarioCliente: UsuarioCliente;
-    pedidos: Pedido[];
+    //usuarioCliente: UsuarioCliente;
+    pedidos?: Pedido[];
 
     constructor(
         id: number = 0,
@@ -26,7 +25,7 @@ export class Cliente extends Base {
         fechaNacimiento: string = '',
         domicilios: Domicilio[] = [],
         imagenCliente: ImagenCliente,
-        usuarioCliente: UsuarioCliente,
+        //usuarioCliente: UsuarioCliente,
         pedidos: Pedido[] = []
     ) {
         super(id, eliminado);
@@ -37,7 +36,7 @@ export class Cliente extends Base {
         this.fechaNacimiento = fechaNacimiento;
         this.domicilios = domicilios;
         this.imagenCliente = imagenCliente;
-        this.usuarioCliente = usuarioCliente;
+        //this.usuarioCliente = usuarioCliente;
         this.pedidos = pedidos;
     }
 }
