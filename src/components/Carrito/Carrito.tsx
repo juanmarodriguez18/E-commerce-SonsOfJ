@@ -240,7 +240,7 @@ export function Carrito() {
               disabled={!clienteSeleccionado}
             >
               {clienteSeleccionado?.domicilios.map(domicilio => (
-                <MenuItem key={domicilio.id} value={domicilio.id}>{domicilio.calle} {domicilio.numero}, {domicilio.localidad.nombre}, {domicilio.localidad.provincia.nombre}</MenuItem>
+                <MenuItem key={domicilio.id} value={domicilio.id}>{domicilio.calle} {domicilio.numero}, {domicilio.localidad.nombre}, {domicilio?.localidad?.provincia?.nombre}</MenuItem>
               ))}
             </Select>
           </FormControl>

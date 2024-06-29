@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   Typography,
   Container,
@@ -8,31 +9,30 @@ import {
   CardContent,
   Button,
 } from '@mui/material';
-import { getArticuloManufacturadoById } from '../services/ArticuloManufacturadoService';
-import { useEffect, useState } from 'react';
-import { ArticuloManufacturado } from '../types/ArticuloManufacturado';
 import { useNavigate } from 'react-router-dom';
- // Asegúrate de tener esta función en tu API
+import { getEmpresas } from '../services/EmpresaService'; // Asegúrate de tener este servicio
+import { Empresa } from '../types/Empresa';
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [productos, setProductos] = useState<ArticuloManufacturado[]>([]);
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
 
   useEffect(() => {
-    const fetchProductos = async () => {
+    const fetchEmpresas = async () => {
       try {
-        const producto11 = await getArticuloManufacturadoById(13);
-        const producto13 = await getArticuloManufacturadoById(14);
-        const producto14 = await getArticuloManufacturadoById(15);
-        setProductos([producto11, producto13, producto14]);
+        const empresasData = await getEmpresas(); // Implementa esta función en tu servicio
+        setEmpresas(empresasData);
       } catch (error) {
-        console.error('Error al obtener los productos:', error);
-        // Manejar el error, por ejemplo, mostrando un mensaje al usuario
+        console.error('Error al obtener las empresas:', error);
       }
     };
 
-    fetchProductos();
+    fetchEmpresas();
   }, []);
+
+  const handleSeleccionarEmpresa = (empresaId: number) => {
+    navigate(`/sucursales/${empresaId}`);
+  };
 
   return (
     <>
@@ -45,39 +45,36 @@ const HomePage = () => {
           "Descubre nuestros deliciosos productos."
         </Typography>
 
-        {/* Sección de productos */}
+        {/* Sección de empresas */}
         <Typography variant="h5" sx={{ mt: 4, mb: 2 }}>
-          Nuestros Productos Destacados:
+          Seleccione la empresa a la que quiere pedir:
         </Typography>
         <Grid container spacing={2}>
-          {productos.map((producto) => (
-            <Grid key={producto.id} item xs={12} sm={6} md={4}>
+          {empresas.map((empresa) => (
+            <Grid key={empresa.id} item xs={12} sm={6} md={4}>
               <Card>
                 <CardMedia
                   component="img"
                   height="240"
-                  image={Array.from(producto.imagenesArticulo.values())[0]?.url || 'https://via.placeholder.com/240'}
-                  alt={producto.denominacion}
+                  image={Array.from(empresa.imagenesEmpresa.values())[0]?.url || 'https://via.placeholder.com/240'}
+                  alt={empresa.nombre}
                 />
                 <CardContent>
                   <Typography gutterBottom variant="h6" component="div">
-                    {producto.denominacion}
+                    {empresa.nombre}
                   </Typography>
-                  <Typography variant="body2">
-                    {producto.descripcion}
-                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleSeleccionarEmpresa(empresa.id)}
+                  >
+                    Seleccionar
+                  </Button>
                 </CardContent>
               </Card>
             </Grid>
           ))}
         </Grid>
-
-         {/* Botón de ver más productos */}
-        <Box sx={{ mt: 4, textAlign: 'center' }}>
-          <Button variant="contained" color="primary" onClick={() => navigate("/menu")}>
-            Ver más productos
-          </Button>
-        </Box>
       </Container>
 
       {/* Footer */}
