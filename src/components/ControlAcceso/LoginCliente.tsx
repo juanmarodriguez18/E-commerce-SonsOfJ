@@ -1,15 +1,21 @@
+// LoginCliente.tsx
+
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from './AuthContext';
-import { TextField, Button, Typography, Container, Box, Alert, InputAdornment, IconButton } from '@mui/material';
+import { TextField, Button, Typography, Alert, InputAdornment, IconButton, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
-const Login: React.FC = () => {
+interface LoginClienteProps {
+    open: boolean;
+    onClose: () => void;
+}
+
+const LoginCliente: React.FC<LoginClienteProps> = ({ open, onClose }) => {
     const { login } = useAuth();
     const [email, setEmail] = useState('');
     const [clave, setClave] = useState('');
     const [error, setError] = useState('');
-    const navigate = useNavigate();
     const [mostrarClave, setMostrarClave] = useState(false);
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -17,27 +23,18 @@ const Login: React.FC = () => {
         try {
             await login(email, clave);
             setError('');
-            navigate('/');
-            window.location.reload();
+            onClose(); // Cierra el Dialog al completar el login correctamente
+            window.location.reload(); // Opcional: recargar la página si es necesario
         } catch (error) {
             setError('Email y/o Clave incorrectos, vuelva a intentar');
         }
     };
 
     return (
-        <Container component="main" maxWidth="xs">
-            <Box
-                sx={{
-                    marginTop: 8,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                }}
-            >
-                <Typography component="h1" variant="h5">
-                    Login
-                </Typography>
-                <Box component="form" onSubmit={handleLogin} sx={{ mt: 3 }}>
+        <Dialog open={open} onClose={onClose} aria-labelledby="form-dialog-title">
+            <DialogTitle id="form-dialog-title">Login</DialogTitle>
+            <DialogContent>
+                <form onSubmit={handleLogin}>
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -59,7 +56,6 @@ const Login: React.FC = () => {
                         name="clave"
                         label="Clave"
                         type={mostrarClave ? 'text' : 'password'}
-                        id="clave"
                         autoComplete="current-password"
                         value={clave}
                         onChange={(e) => setClave(e.target.value)}
@@ -77,23 +73,19 @@ const Login: React.FC = () => {
                             )
                         }}
                     />
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        sx={{ mt: 3, mb: 2 }}
-                    >
-                        Login
-                    </Button>
-                    {error && <Alert severity="error">{error}</Alert>}
-                    <Typography variant="body2" align="center">
-                        ¿No tienes una cuenta? <Link to="/registerCliente">Regístrate aquí</Link>
-                    </Typography>
-                </Box>
-            </Box>
-        </Container>
+                    <DialogActions>
+                        <Button type="submit" variant="contained" color="primary">
+                            Login
+                        </Button>
+                        {error && <Alert severity="error">{error}</Alert>}
+                    </DialogActions>
+                </form>
+                <Typography variant="body2" align="center">
+                    ¿No tienes una cuenta? <Link to="/registerCliente">Regístrate aquí</Link>
+                </Typography>
+            </DialogContent>
+        </Dialog>
     );
 };
 
-export default Login;
+export default LoginCliente;
