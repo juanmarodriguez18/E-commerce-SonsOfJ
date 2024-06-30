@@ -6,7 +6,7 @@ import { PedidoDetalle } from '../../types/PedidoDetalle';
 import { useCarrito } from './useCarrito';
 import { guardarPedidoEnBD } from '../../services/PedidoService';
 import { Pedido } from '../../types/Pedido';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Estado } from '../../types/enums/Estado';
 import { TipoEnvio } from '../../types/enums/TipoEnvio';
 import { FormaPago } from '../../types/enums/FormaPago';
@@ -14,6 +14,11 @@ import { ArticuloManufacturado } from '../../types/ArticuloManufacturado';
 import { useDatosSeleccion } from './useDatosSeleccion';
 import CheckoutMP from './MercadoPago/CheckoutMP';
 import { ArticuloInsumo } from '../../types/ArticuloInsumo';
+import { useAuth } from '../ControlAcceso/AuthContext';
+import { useParams } from 'react-router-dom';
+import { Cliente } from '../../types/Cliente';
+import { Sucursal } from '../../types/Sucursal';
+import { getSucursalById } from '../../services/SucursalService';
 
 interface CartItemProps {
   detalle: PedidoDetalle;
@@ -52,13 +57,34 @@ function CartItem({ detalle, onRemove }: CartItemProps) {
 export function Carrito() {
   const { cart, removeCarrito, limpiarCarrito, totalPedido } = useCarrito();
   const {
-    sucursales, clientes, tipoEnvio, setTipoEnvio, formaPago, setFormaPago,
-    sucursalSeleccionada, setSucursalSeleccionada, clienteSeleccionado, setClienteSeleccionado,
+    tipoEnvio, setTipoEnvio, formaPago, setFormaPago,
     domicilioSeleccionado, setDomicilioSeleccionado, empleado
   } = useDatosSeleccion();
-
+  const { sucursalId } = useParams<{ sucursalId: string }>();
+  const {cliente} = useAuth();
   const [loading, setLoading] = useState(false);
   const [pedido, setPedido] = useState<Pedido | null>(null);
+  const [sucursalSeleccionada, setSucursalSeleccionada] = useState<Sucursal | undefined>(undefined);
+
+  // Asegúrate de que `user` contenga la información del cliente logeado, incluyendo sus domicilios
+  const clienteSeleccionado: Cliente | undefined = cliente ?? undefined;
+  
+  useEffect(() => {
+    if (sucursalId) {
+      // Llamamos a la función getSucursalById del servicio
+      const fetchSucursal = async () => {
+        try {
+          const sucursal = await getSucursalById(parseInt(sucursalId, 10));
+          console.log("sucursal:" + sucursal)
+          setSucursalSeleccionada(sucursal);
+        } catch (error) {
+          console.error('Error al obtener la sucursal:', error);
+        }
+      };
+      
+      fetchSucursal();
+    }
+  }, [sucursalId]);
 
   const mostrarCarritoJSON = () => {
     console.log(cart);
@@ -89,12 +115,16 @@ export function Carrito() {
       );
       const horaEstimadaFinalizacion = new Date(horaActual.getTime() + maxTiempoEstimado * 60000);
 
+      if (!domicilioSeleccionado) {
+        throw new Error('No se ha seleccionado un domicilio válido.');
+      }
+
       if (!sucursalSeleccionada) {
         throw new Error('No se ha seleccionado una sucursal válida.');
       }
 
-      if (!clienteSeleccionado || !domicilioSeleccionado) {
-        throw new Error('No se ha seleccionado un cliente o domicilio válido.');
+      if (!clienteSeleccionado) {
+        throw new Error('No se ha cargado un cliente válido.');
       }
 
       if (!empleado) {
@@ -190,41 +220,17 @@ export function Carrito() {
               label="Forma de Pago"
               value={formaPago}
               onChange={(e) => setFormaPago(e.target.value as FormaPago)}
-            >
-              <MenuItem value={FormaPago.EFECTIVO}>Efectivo</MenuItem>
-              <MenuItem value={FormaPago.MERCADO_PAGO}>Mercado Pago</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
+            > 
+              {tipoEnvio === TipoEnvio.TAKE_AWAY && (
+                <MenuItem value={FormaPago.EFECTIVO}>Efectivo</MenuItem>
+              )}
+              {tipoEnvio === TipoEnvio.TAKE_AWAY && (
+                <MenuItem value={FormaPago.MERCADO_PAGO}>Mercado Pago</MenuItem>
+              )}
+              {tipoEnvio === TipoEnvio.DELIVERY && (
+                <MenuItem value={FormaPago.MERCADO_PAGO}>Mercado Pago</MenuItem>
+              )}
 
-        <Grid item xs={3}>
-          <FormControl fullWidth margin="normal">
-            <InputLabel id="sucursal-label">Sucursal</InputLabel>
-            <Select
-              labelId="sucursal-label"
-              label="Sucursal"
-              value={sucursalSeleccionada?.id || ''}
-              onChange={(e) => setSucursalSeleccionada(sucursales.find(s => s.id === e.target.value) || null)}
-            >
-              {sucursales.map(sucursal => (
-                <MenuItem key={sucursal.id} value={sucursal.id}>{sucursal.nombre}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-
-        <Grid item xs={3}>
-          <FormControl fullWidth margin="normal">
-            <InputLabel id="cliente-label">Cliente</InputLabel>
-            <Select
-              labelId="cliente-label"
-              label="Cliente"
-              value={clienteSeleccionado?.id || ''}
-              onChange={(e) => setClienteSeleccionado(clientes.find(c => c.id === e.target.value) || null)}
-            >
-              {clientes.map(cliente => (
-                <MenuItem key={cliente.id} value={cliente.id}>{cliente.nombre} {cliente.apellido}</MenuItem>
-              ))}
             </Select>
           </FormControl>
         </Grid>

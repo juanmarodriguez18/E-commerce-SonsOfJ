@@ -86,7 +86,7 @@ const RegisterCliente: React.FC = () => {
             // Verificar el estado de la respuesta
             if (response.status === 201) { // 201 Created
                 alert('Cliente registrado exitosamente');
-                navigate('/loginCliente'); // Redirige a la página de login
+                navigate('/'); // Redirige a home
             } else {
                 setMensaje('Error inesperado al registrar el cliente');
             }
