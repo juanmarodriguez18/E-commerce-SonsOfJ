@@ -1,7 +1,5 @@
-// LoginCliente.tsx
-
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { TextField, Button, Typography, Alert, InputAdornment, IconButton, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -17,6 +15,7 @@ const LoginCliente: React.FC<LoginClienteProps> = ({ open, onClose }) => {
     const [clave, setClave] = useState('');
     const [error, setError] = useState('');
     const [mostrarClave, setMostrarClave] = useState(false);
+    const navigate = useNavigate();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,6 +27,11 @@ const LoginCliente: React.FC<LoginClienteProps> = ({ open, onClose }) => {
         } catch (error) {
             setError('Email y/o Clave incorrectos, vuelva a intentar');
         }
+    };
+
+    const handleRegisterClick = () => {
+        onClose(); // Cierra el Dialog al hacer clic en "Regístrate aquí"
+        navigate('/registerCliente'); // Redirecciona a la página de registro
     };
 
     return (
@@ -81,7 +85,10 @@ const LoginCliente: React.FC<LoginClienteProps> = ({ open, onClose }) => {
                     </DialogActions>
                 </form>
                 <Typography variant="body2" align="center">
-                    ¿No tienes una cuenta? <Link to="/registerCliente">Regístrate aquí</Link>
+                    ¿No tienes una cuenta?{' '}
+                    <RouterLink to="/registerCliente" onClick={handleRegisterClick}>
+                        Regístrate aquí
+                    </RouterLink>
                 </Typography>
             </DialogContent>
         </Dialog>

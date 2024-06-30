@@ -1,17 +1,34 @@
 import { AppBar, Avatar, Badge, Box, Button, Toolbar, Typography } from "@mui/material";
-import { ShoppingCart as ShoppingCartIcon, Fastfood as FastfoodIcon } from "@mui/icons-material";
+import { ShoppingCart as ShoppingCartIcon,} from "@mui/icons-material";
 import { useCarrito } from "../Carrito/useCarrito";
-import { Link, useNavigate } from "react-router-dom";
+import { Link} from "react-router-dom";
 import { useAuth } from "../ControlAcceso/AuthContext";
 import LogoutButton from "./LogoutButton";
 import LoginButton from "./LoginButton";
 import RegisterButton from "./RegisterButton";
+import { useState } from "react";
+import LoginCliente from "../ControlAcceso/LoginCliente";
 
 const Header = () => {
+    //const { sucursalId } = useParams<{ sucursalId: string }>();
     const { isLoggedIn, cliente } = useAuth();
-    const navigate = useNavigate();
     const { cart } = useCarrito();
+    const [modalLoginOpen, setModalLoginOpen] = useState(false);
     const cantidadTotal = cart.reduce((total, item) => total + item.cantidad, 0);
+
+    const handleCloseModalLogin = () => {
+        setModalLoginOpen(false);
+      };
+
+    /*const handleIrAPagar = () => {
+        if (isLoggedIn) {
+          // Si el usuario está autenticado, redirige al carrito
+          navigate(`/carrito/${sucursalId}`);
+        } else {
+          // Si el usuario no está autenticado, muestra el modal de login
+          setModalLoginOpen(true);
+        }
+      };*/
 
     return(
         <AppBar position="static" color="default">
@@ -19,15 +36,8 @@ const Header = () => {
                 <Typography variant="h6" component={Link} to="/" sx={{ textDecoration: 'none', color: 'inherit', flexGrow: 1 }}>
                     El Buen Sabor
                 </Typography>
-                <Button
-                    disableRipple
-                    disableTouchRipple
-                    className="btn-list-sidebar"
-                    startIcon={<FastfoodIcon />}
-                    onClick={() => navigate("/menu")}
-                  >
-                    Menú
-                </Button>
+                 {/* Modal de Login */}
+                <LoginCliente open={modalLoginOpen} onClose={handleCloseModalLogin} />
                 <Button
                     disableRipple
                     disableTouchRipple
@@ -37,7 +47,6 @@ const Header = () => {
                         <ShoppingCartIcon sx={{ fontSize: 20 }} />
                       </Badge>
                     }
-                    onClick={() => navigate("/carrito")}
                   >
                     Carrito
                 </Button>

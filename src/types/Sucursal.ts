@@ -11,13 +11,13 @@ export class Sucursal extends Base {
     nombre: string;
     horarioApertura: Date; // Cambiado a Date para manejar fechas y horas en TypeScript
     horarioCierre: Date; // Cambiado a Date para manejar fechas y horas en TypeScript
-    empresa: Empresa;
+    empresa?: Empresa;
     domicilio: Domicilio;
-    promociones: Promocion[];
-    categorias: Categoria[];
-    empleados: Empleado[];
-    pedidos: Pedido[];
-    imagenesSucursal: ImagenSucursal[];
+    promociones?: Promocion[];
+    categorias?: Categoria[];
+    empleados?: Empleado[];
+    pedidos?: Pedido[];
+    imagenesSucursal?: ImagenSucursal[];
 
     constructor(
         id: number = 0,
